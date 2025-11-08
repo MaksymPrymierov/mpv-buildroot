@@ -1,0 +1,34 @@
+#!/bin/bash
+
+set -e
+
+# Status Codes
+SUCCESS=0
+INVALID_ARGUMENT=22
+
+# Directories
+CURRENT_DIR=$(pwd)
+BUILDROOT_DIR="${CURRENT_DIR}/buildroot"
+
+while getopts "hb:" opt; do
+        case $opt in
+                h)
+                        echo "Usage: $0 -b [config_name]"
+                        echo "  -h                      Show help page"
+                        echo "  -b [config_name]        Build specific config"
+                        exit ${SUCCESS}
+                        ;;
+                b)
+                        pushd ${BUILDROOT_DIR}
+                        make ${OPTARG}
+                        make
+                        pulld
+                        exit ${SUCCESS}
+                        ;;
+                \?)
+                        exit ${INVALID_ARGUMENT}
+        esac
+done
+
+shift $((OPTIND - 1))
+
