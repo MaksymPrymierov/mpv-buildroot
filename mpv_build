@@ -7,22 +7,29 @@ SUCCESS=0
 INVALID_ARGUMENT=22
 
 # Directories
-CURRENT_DIR=$(pwd)
-BUILDROOT_DIR="${CURRENT_DIR}/buildroot"
+export BR2_EXTERNAL=$(pwd)
+BUILDROOT_DIR="${BR2_EXTERNAL}/buildroot"
 
-while getopts "hb:" opt; do
+while getopts "hb:c" opt; do
         case $opt in
                 h)
                         echo "Usage: $0 -b [config_name]"
                         echo "  -h                      Show help page"
                         echo "  -b [config_name]        Build specific config"
+                        echo "  -c                      Clean build directory"
                         exit ${SUCCESS}
                         ;;
                 b)
                         pushd ${BUILDROOT_DIR}
                         make ${OPTARG}
                         make
-                        pulld
+                        popd
+                        exit ${SUCCESS}
+                        ;;
+                c)
+                        pushd ${BUILDROOT_DIR}
+                        make clean
+                        popd
                         exit ${SUCCESS}
                         ;;
                 \?)
