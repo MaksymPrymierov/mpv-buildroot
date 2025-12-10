@@ -9,6 +9,11 @@ INVALID_ARGUMENT=22
 # Directories
 export BR2_EXTERNAL=$(pwd)
 BUILDROOT_DIR="${BR2_EXTERNAL}/buildroot"
+OUTPUT_DIR="${BUILDROOT_DIR}/output/images"
+
+# Root Password
+ROOT_PASSWORD=$(tr -dc A-Za-z0-9 </dev/urandom | head -c 13; echo)
+export BR2_ROOT_PASSWORD=$(mkpasswd -m sha-512 "${ROOT_PASSWORD}" | sed 's/\$/\$\$/g')
 
 while getopts "hb:c" opt; do
         case $opt in
@@ -23,6 +28,7 @@ while getopts "hb:c" opt; do
                         pushd ${BUILDROOT_DIR}
                         make ${OPTARG}
                         make
+                        echo ${ROOT_PASSWORD} > ${OUTPUT_DIR}/root_password
                         popd
                         exit ${SUCCESS}
                         ;;
